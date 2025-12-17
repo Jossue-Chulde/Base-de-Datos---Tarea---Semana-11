@@ -84,4 +84,121 @@ BEGIN
     );
 END$$
 
+--------------------------------------------
+-- Trigger para DELETE en clientes
+DELIMITER $$
+CREATE TRIGGER tr_clientes_after_delete
+AFTER DELETE ON clientes
+FOR EACH ROW
+BEGIN
+    INSERT INTO audit_log (usuario,tabla_afectada, operacion,
+		valor_anterior, valor_nuevo, ip_conexion)
+        VALUES (USER(),'clientes', 'DELETE',
+        JSON_OBJECT(
+            'id', OLD.id,
+            'nombre', OLD.nombre,
+            'email', OLD.email,
+            'pais', OLD.pais,
+            'fecha_registro', OLD.fecha_registro,
+            'activo', OLD.activo
+        ),NULL,
+        (SELECT SUBSTRING_INDEX(USER(), '@', -1))
+    );
+END$$
+DELIMITER ;
+-------------------------------------------------
+-- Trigger para INSERT en inversionistas
+DELIMITER $$
+CREATE TRIGGER tr_inversionistas_after_insert
+AFTER INSERT ON inversionistas
+FOR EACH ROW
+BEGIN
+    INSERT INTO audit_log (usuario, tabla_afectada, operacion,
+        valor_anterior, valor_nuevo, ip_conexion)
+        VALUES (USER(), 'inversionistas','INSERT',NULL,JSON_OBJECT(
+            'id', NEW.id,
+            'nombre', NEW.nombre,
+            'tipo', NEW.tipo,
+            'capital_invertido', NEW.capital_invertido,
+            'fecha_inicio', NEW.fecha_inicio,
+            'activo', NEW.activo
+        ),
+        (SELECT SUBSTRING_INDEX(USER(), '@', -1))
+    );
+END$$
+DELIMITER ;
+----------------------------------------------------------
+-- Trigger para DELETE en inversionistas
+DELIMITER $$
+CREATE TRIGGER tr_inversionistas_after_delete
+AFTER DELETE ON inversionistas
+FOR EACH ROW
+BEGIN
+    INSERT INTO audit_log (
+        usuario,
+        tabla_afectada,
+        operacion,
+        valor_anterior,
+        valor_nuevo,
+        ip_conexion
+    ) VALUES (
+        USER(),
+        'inversionistas',
+        'DELETE',
+        JSON_OBJECT(
+            'id', OLD.id,
+            'nombre', OLD.nombre,
+            'tipo', OLD.tipo,
+            'capital_invertido', OLD.capital_invertido,
+            'fecha_inicio', OLD.fecha_inicio,
+            'activo', OLD.activo
+        ),
+        NULL,
+        (SELECT SUBSTRING_INDEX(USER(), '@', -1))
+    );
+END$$
+DELIMITER ;
+---------------------------------------------
+-- Trigger para INSERT en ventas
+DELIMITER $$
+CREATE TRIGGER tr_ventas_after_insert
+AFTER INSERT ON ventas
+FOR EACH ROW
+BEGIN
+    INSERT INTO audit_log (usuario, tabla_afectada, operacion,
+        valor_anterior, valor_nuevo, ip_conexion)
+        VALUES (USER(), 'ventas', 'INSERT', NULL,
+        JSON_OBJECT(
+            'id', NEW.id,
+            'cliente_id', NEW.cliente_id,
+            'producto', NEW.producto,
+            'monto', NEW.monto,
+            'fecha_venta', NEW.fecha_venta,
+            'estado', NEW.estado
+        ),
+        (SELECT SUBSTRING_INDEX(USER(), '@', -1))
+    );
+END$$
+DELIMITER ;
 
+-- Trigger para DELETE en ventas
+DELIMITER $$
+CREATE TRIGGER tr_ventas_after_delete
+AFTER DELETE ON ventas
+FOR EACH ROW
+BEGIN
+    INSERT INTO audit_log (usuario, tabla_afectada, operacion,
+        valor_anterior, valor_nuevo, ip_conexion)
+    VALUES (USER(), 'ventas', 'DELETE',
+        JSON_OBJECT(
+            'id', OLD.id,
+            'cliente_id', OLD.cliente_id,
+            'producto', OLD.producto,
+            'monto', OLD.monto,
+            'fecha_venta', OLD.fecha_venta,
+            'estado', OLD.estado
+        ),
+        NULL, (SELECT SUBSTRING_INDEX(USER(), '@', -1))
+    );
+END$$
+DELIMITER ;
