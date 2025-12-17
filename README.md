@@ -28,8 +28,7 @@ Este usuario experimentó una evolución controlada de permisos:
 * Ajuste 2: Se añadió UPDATE en toda la base
 
 * Configuración final: CRUD completo en clientes + SELECT en pago_campamento
-
-/---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------/
+/------------------------------------------------------------------------------------------------------------------------------------------------------------/
 
 # *Base de Datos - Negocios_Extranjeros S.A.*
 ## Descripción del Proyecto
